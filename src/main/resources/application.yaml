@@ -42,10 +42,14 @@ spring:
     caffeine.spec: maximumSize=5000,expireAfterAccess=60s
 
 logging:
+  file.name: log/application.log
   level:
     root: WARN
     ru.javaops.bootjava: DEBUG
     org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss}  %-5level %logger{36} - %msg%n"
 
 server.servlet:
   encoding:
