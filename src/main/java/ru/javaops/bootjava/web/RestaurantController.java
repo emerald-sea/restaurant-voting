@@ -46,11 +46,10 @@ public class RestaurantController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Restaurant> createWithLocation(@Valid @RequestBody Restaurant restaurant) {
+    public ResponseEntity<Restaurant> create(@Valid @RequestBody Restaurant restaurant) {
         log.info("create {}", restaurant);
         checkNew(restaurant);
         Restaurant created = repository.prepareAndSave(restaurant);
-
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(RESTAURANTS_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
@@ -64,5 +63,4 @@ public class RestaurantController {
         assureIdConsistent(restaurant, id);
         repository.prepareAndSave(restaurant);
     }
-
 }

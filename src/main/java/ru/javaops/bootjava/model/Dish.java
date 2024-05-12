@@ -25,13 +25,11 @@ import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Dish extends NamedEntity implements HasId {
-
     @Column(name = "created_at", nullable = false, columnDefinition = "DATE DEFAULT CURRENT_DATE", updatable = false)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @DateTimeFormat(iso = DATE, pattern = "yyyy-MM-dd")
     @NotNull
     private LocalDate createdAt = LocalDate.now();
-
 
     @Column(name = "price", nullable = false)
     @NotNull
@@ -43,12 +41,11 @@ public class Dish extends NamedEntity implements HasId {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonBackReference
     @JsonIgnore
-     //  @NotNull(groups = View.Persist.class)
     private Restaurant restaurant;
 
     public Dish(Integer id, String name, Integer price) {
         super(id, name);
-         this.createdAt = LocalDate.now();
+        this.createdAt = LocalDate.now();
         this.price = price;
     }
 }

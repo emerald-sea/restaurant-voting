@@ -48,12 +48,6 @@ public class DishController {
         dishRepository.deleteExisted(id, restaurantId);
     }
 
-//    @GetMapping
-//    public List<Dish> getAll(@PathVariable("restaurant_id") int restaurantId) {
-//        log.info("getAll");
-//        return dishRepository.findByRestaurant(restaurantId);
-//    }
-
     @SneakyThrows
     @GetMapping
     public List<Dish> getAllByDate(@PathVariable("restaurant_id") int restaurantId) {
