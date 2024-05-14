@@ -20,7 +20,8 @@ import java.time.LocalDate;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 
 @Entity
-@Table(name = "dish")
+@Table(name = "dish", uniqueConstraints = {@UniqueConstraint(columnNames = {"created_at", "name", "restaurant_id"},
+        name = "dish_unique_created_at_name_restaurant_id_idx")})
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

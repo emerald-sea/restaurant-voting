@@ -23,7 +23,7 @@ public class VoteUtil {
         LocalTime time2 = LocalTime.parse(voteBefore);
         int value = localTime.compareTo(time2);
         if (value >= 0) {
-            throw new IllegalRequestDataException("You can't change your vote after 11:00");
+            throw new IllegalRequestDataException("You can't vote after 11:00");
         }
     }
 }

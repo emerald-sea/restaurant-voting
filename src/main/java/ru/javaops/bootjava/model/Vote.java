@@ -20,7 +20,8 @@ import java.time.LocalDate;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 
 @Entity
-@Table(name = "vote")
+@Table(name = "vote", uniqueConstraints = {@UniqueConstraint(columnNames = {"created_at", "user_id"},
+        name = "vote_unique_created_at_user_id_idx")})
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -46,8 +47,19 @@ public class Vote extends BaseEntity implements HasId {
     @NotNull
     private LocalDate createdAt = LocalDate.now();
 
+    public Vote(Vote v) {
+        this(v.id, v.getRestaurant(), v.getUser());
+    }
+
     public Vote(Integer id) {
         super(id);
+        this.createdAt = LocalDate.now();
+    }
+
+    public Vote(Integer id, Restaurant restaurant, User user) {
+        super(id);
+        this.restaurant = restaurant;
+        this.user = user;
         this.createdAt = LocalDate.now();
     }
 }

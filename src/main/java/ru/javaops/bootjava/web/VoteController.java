@@ -40,23 +40,22 @@ public class VoteController {
 
     @Autowired
     protected RestaurantRepository restaurantRepository;
-    @Autowired
-    private VoteRepository voteRepository;
 
     @GetMapping("/{id}")
     public Vote get(@PathVariable int id, @PathVariable("restaurant_id") int restaurantId, @AuthenticationPrincipal AuthUser authUser) {
-        Optional<Vote> vote = voteRepository.findById(id);
-        checkUser(authUser, vote.orElseThrow(), "You are not allowed to see this vote");
-        return repository.getExistedToday(id, restaurantId, LocalDate.now()).orElseThrow(() ->
-                new NotFoundException("Vote with id=" + id + " and restaurant=" + restaurantId + " not found"));
+        Vote vote = repository.getExistedToday(id, restaurantId, LocalDate.now()).orElseThrow(() ->
+                new NotFoundException("Vote with id=" + id + " and restaurant=" + restaurantId + " are not found"));
+        checkUser(authUser, vote, "You are not allowed to see this vote");
+        return vote;
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id, @PathVariable("restaurant_id") int restaurantId,
                        @AuthenticationPrincipal AuthUser authUser) {
-        Optional<Vote> vote = voteRepository.findById(id);
-        checkUser(authUser, vote.orElseThrow(), "You are not allowed to delete this vote");
+        Vote vote = repository.getExistedToday(id, restaurantId, LocalDate.now()).orElseThrow(() ->
+                new NotFoundException("Vote with id=" + id + " and restaurant=" + restaurantId + " are not found"));
+        checkUser(authUser, vote, "You are not allowed to delete this vote");
         checkTime(VOTE_BEFORE);
         repository.deleteExisted(id, restaurantId);
     }
@@ -67,7 +66,7 @@ public class VoteController {
                                                    @AuthenticationPrincipal AuthUser authUser) {
         log.info("create {}", vote);
         checkNew(vote);
-         checkTime(VOTE_BEFORE);
+        checkTime(VOTE_BEFORE);
         Optional<Restaurant> restaurant = restaurantRepository.findById(restaurantId);
         vote.setRestaurant(restaurant.get());
         User user = authUser.getUser();
@@ -84,6 +83,4 @@ public class VoteController {
                 ).toUriString());
         return ResponseEntity.created(uriOfNewResource).body(created);
     }
-
-
 }

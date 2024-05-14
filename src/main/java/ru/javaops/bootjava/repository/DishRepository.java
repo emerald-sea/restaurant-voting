@@ -7,6 +7,7 @@ import ru.javaops.bootjava.model.Dish;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Transactional(readOnly = true)
 public interface DishRepository extends BaseRepository<Dish> {
@@ -14,7 +15,7 @@ public interface DishRepository extends BaseRepository<Dish> {
     List<Dish> findByRestaurantByDate(int restaurant, LocalDate createdAt);
 
     @Query("SELECT d FROM Dish d WHERE d.id=:id AND d.restaurant.id=:restaurant")
-    Dish getExisted(int id, int restaurant);
+    Optional<Dish> getExisted(int id, int restaurant);
 
     @Modifying
     @Transactional

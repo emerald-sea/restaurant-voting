@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import ru.javaops.bootjava.error.NotFoundException;
 import ru.javaops.bootjava.model.Dish;
 import ru.javaops.bootjava.model.Restaurant;
 import ru.javaops.bootjava.repository.DishRepository;
@@ -29,7 +30,7 @@ import static ru.javaops.bootjava.web.RestValidation.checkNew;
 public class DishController {
     protected final Logger log = getLogger(getClass());
 
-    static final String REST_URL = "/api/restaurants/{restaurant_id}/dishes";
+    public static final String REST_URL = "/api/restaurants/{restaurant_id}/dishes";
 
     @Autowired
     protected DishRepository dishRepository;
@@ -39,7 +40,8 @@ public class DishController {
 
     @GetMapping("/{id}")
     public Dish get(@PathVariable int id, @PathVariable("restaurant_id") int restaurantId) {
-        return dishRepository.getExisted(id, restaurantId);
+        return dishRepository.getExisted(id, restaurantId).orElseThrow(() ->
+                new NotFoundException("Dish with id=" + id + " and restaurant=" + restaurantId + " not found"));
     }
 
     @DeleteMapping("/{id}")
