@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javaops.bootjava.model.Restaurant;
 import ru.javaops.bootjava.repository.RestaurantRepository;
-import ru.javaops.bootjava.to.MenuTo;
+import ru.javaops.bootjava.to.RestaurantWithDishes;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -48,13 +48,13 @@ public class RestaurantController {
     }
 
     @GetMapping("/with-dishes")
-    public List<MenuTo> getWithDishes() {
-        List<Restaurant> restaurants = repository.findAllWithDishesToday(LocalDate.now());
+    public List<RestaurantWithDishes> getWithDishes() {
+        List<Restaurant> restaurants = repository.findAllByDate(LocalDate.now());
         log.info("getWithDishes");
         return restaurants
                 .stream()
                 .map(
-                        m -> new MenuTo(
+                        m -> new RestaurantWithDishes(
                                 m.getId(),
                                 m.getName(),
                                 m.getDishes()))

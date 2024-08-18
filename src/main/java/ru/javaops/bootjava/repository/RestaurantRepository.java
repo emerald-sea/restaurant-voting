@@ -11,10 +11,10 @@ import java.util.List;
 public interface RestaurantRepository extends BaseRepository<Restaurant> {
     @Transactional
     default Restaurant prepareAndSave(Restaurant restaurant) {
-        restaurant.setName(restaurant.getName().toLowerCase());
+        restaurant.setName(restaurant.getName());
         return save(restaurant);
     }
 
     @Query("SELECT r FROM Restaurant r LEFT JOIN FETCH r.dishes  d WHERE d.createdAt=:createdAt")
-    List<Restaurant> findAllWithDishesToday(LocalDate createdAt);
+    List<Restaurant> findAllByDate(LocalDate createdAt);
 }

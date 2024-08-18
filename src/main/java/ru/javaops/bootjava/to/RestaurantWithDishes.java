@@ -9,15 +9,13 @@ import java.util.List;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
-public class MenuTo extends NamedTo implements HasId {
+public class RestaurantWithDishes extends NamedTo implements HasId {
     List<Dish> dishes;
 
-
-    public MenuTo(Integer id, String name, List<Dish> dishes) {
+    public RestaurantWithDishes(Integer id, String name, List<Dish> dishes) {
         super(id, name);
         this.dishes = dishes;
     }
-
 
     @Override
     public String toString() {

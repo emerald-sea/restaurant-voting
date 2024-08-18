@@ -11,13 +11,15 @@ import ru.javaops.bootjava.repository.DishRepository;
 import ru.javaops.bootjava.util.JsonUtil;
 import ru.javaops.bootjava.web.AbstractControllerTest;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javaops.bootjava.web.RestaurantController.RESTAURANTS_REST_URL;
 import static ru.javaops.bootjava.web.dish.DishTestData.*;
-import static ru.javaops.bootjava.web.restaurant.RestaurantTestData.RESTAURANT_1_ID;
+import static ru.javaops.bootjava.web.restaurant.RestaurantTestData.*;
 import static ru.javaops.bootjava.web.user.UserTestData.ADMIN_MAIL;
 import static ru.javaops.bootjava.web.user.UserTestData.USER_MAIL;
 
@@ -114,6 +116,27 @@ public class DishControllerTest extends AbstractControllerTest {
         Dish newDish = DishTestData.getNew();
 
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL_SLASH + RESTAURANT_1_ID + "/dishes")
+                .param("createdAt", String.valueOf(LocalDate.now()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(newDish)))
+                .andDo(print())
+                .andExpect(status().isCreated());
+
+
+        Dish created = DISH_MATCHER.readFromJson(action);
+        int newId = created.id();
+        newDish.setId(newId);
+        DISH_MATCHER.assertMatch(created, newDish);
+        DISH_MATCHER.assertMatch(repository.getExisted(newId), newDish);
+    }
+
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void createForTomorrow() throws Exception {
+        Dish newDish = DishTestData.getNewForTomorrow();
+
+        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL_SLASH + RESTAURANT_1_ID + "/dishes")
+                .param("createdAt", String.valueOf(LocalDate.now().plusDays(1)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newDish)))
                 .andDo(print())
@@ -133,12 +156,14 @@ public class DishControllerTest extends AbstractControllerTest {
         Dish newDish = DishTestData.getNew();
 
         perform(MockMvcRequestBuilders.post(REST_URL_SLASH + RESTAURANT_1_ID + "/dishes")
+                .param("createdAt", String.valueOf(LocalDate.now()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newDish)))
                 .andDo(print())
                 .andExpect(status().isCreated());
 
         perform(MockMvcRequestBuilders.post(REST_URL_SLASH + RESTAURANT_1_ID + "/dishes")
+                .param("createdAt", String.valueOf(LocalDate.now()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newDish)))
                 .andDo(print())
@@ -148,7 +173,7 @@ public class DishControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void createInvalid() throws Exception {
-        Dish invalid = new Dish(null, null, null);
+        Dish invalid = new Dish(null, null, null, null);
         perform(MockMvcRequestBuilders.post(REST_URL_SLASH + RESTAURANT_1_ID + "/dishes")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(invalid)))

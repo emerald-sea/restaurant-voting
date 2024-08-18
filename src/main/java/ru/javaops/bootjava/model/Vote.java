@@ -47,10 +47,6 @@ public class Vote extends BaseEntity implements HasId {
     @NotNull
     private LocalDate createdAt = LocalDate.now();
 
-    public Vote(Vote v) {
-        this(v.id, v.getRestaurant(), v.getUser());
-    }
-
     public Vote(Integer id) {
         super(id);
         this.createdAt = LocalDate.now();
@@ -61,5 +57,8 @@ public class Vote extends BaseEntity implements HasId {
         this.restaurant = restaurant;
         this.user = user;
         this.createdAt = LocalDate.now();
+    }
+
+    public Vote(int vote1Id, int i, int i1) {
     }
 }

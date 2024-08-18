@@ -1,6 +1,5 @@
 package ru.javaops.bootjava.web;
 
-import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,25 +44,24 @@ public class VoteController {
     public Vote get(@PathVariable int id, @PathVariable("restaurant_id") int restaurantId, @AuthenticationPrincipal AuthUser authUser) {
         Vote vote = repository.getExistedToday(id, restaurantId, LocalDate.now()).orElseThrow(() ->
                 new NotFoundException("Vote with id=" + id + " and restaurant=" + restaurantId + " are not found"));
-        checkUser(authUser, vote, "You are not allowed to see this vote");
+        checkUser(authUser, vote);
         return vote;
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable int id, @PathVariable("restaurant_id") int restaurantId,
-                       @AuthenticationPrincipal AuthUser authUser) {
-        Vote vote = repository.getExistedToday(id, restaurantId, LocalDate.now()).orElseThrow(() ->
-                new NotFoundException("Vote with id=" + id + " and restaurant=" + restaurantId + " are not found"));
-        checkUser(authUser, vote, "You are not allowed to delete this vote");
+    public void delete(@AuthenticationPrincipal AuthUser authUser) {
+        Vote vote = repository.getExistedTodayByUser(LocalDate.now(), authUser.id()).orElseThrow(() ->
+                new NotFoundException("Your vote is not found"));
+        checkUser(authUser, vote);
         checkTime(VOTE_BEFORE);
-        repository.deleteExisted(id, restaurantId);
+        repository.deleteExistedByUser(authUser.id());
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Vote> createWithLocation(@Valid @RequestBody Vote vote,
-                                                   @PathVariable("restaurant_id") Integer restaurantId,
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE})
+    public ResponseEntity<Vote> createWithLocation(@PathVariable("restaurant_id") Integer restaurantId,
                                                    @AuthenticationPrincipal AuthUser authUser) {
+        Vote vote = new Vote(null);
         log.info("create {}", vote);
         checkNew(vote);
         checkTime(VOTE_BEFORE);

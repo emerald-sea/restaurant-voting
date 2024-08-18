@@ -11,19 +11,17 @@ import java.util.Objects;
 
 @UtilityClass
 public class VoteUtil {
-    public static void checkUser(AuthUser authUser, Vote vote, String msg) {
+    public static void checkUser(AuthUser authUser, Vote vote) {
         User user = authUser.getUser();
         if (!Objects.equals(vote.getUser().id(), user.getId())) {
-            throw new IllegalRequestDataException(msg);
+            throw new IllegalRequestDataException("You are not allowed to delete this vote");
         }
     }
 
     public static void checkTime(CharSequence voteBefore) {
-        LocalTime localTime = LocalTime.now();
-        LocalTime time2 = LocalTime.parse(voteBefore);
-        int value = localTime.compareTo(time2);
-        if (value >= 0) {
-            throw new IllegalRequestDataException("You can't vote after 11:00");
+        LocalTime boundaryTime = LocalTime.parse(voteBefore);
+        if (!LocalTime.now().isBefore(boundaryTime)) {
+            throw new IllegalRequestDataException("You can't vote after " + voteBefore);
         }
     }
 }

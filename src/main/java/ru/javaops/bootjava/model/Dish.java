@@ -44,9 +44,9 @@ public class Dish extends NamedEntity implements HasId {
     @JsonIgnore
     private Restaurant restaurant;
 
-    public Dish(Integer id, String name, Integer price) {
+    public Dish(Integer id, String name, Integer price, LocalDate createdAt) {
         super(id, name);
-        this.createdAt = LocalDate.now();
+        this.createdAt = createdAt;
         this.price = price;
     }
 }

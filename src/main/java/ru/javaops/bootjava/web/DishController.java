@@ -4,9 +4,11 @@ import jakarta.validation.Valid;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javaops.bootjava.error.NotFoundException;
@@ -52,17 +54,21 @@ public class DishController {
 
     @SneakyThrows
     @GetMapping
-    public List<Dish> getAllByDate(@PathVariable("restaurant_id") int restaurantId) {
-        return dishRepository.findByRestaurantByDate(restaurantId, LocalDate.now());
+    @Cacheable(value = "customers", key = "#id")
+    public List<Dish> getAllByDate(@PathVariable("restaurant_id") int restaurantId,
+                                   @RequestParam("date") @Nullable LocalDate localDate) {
+        return dishRepository.findByRestaurantByDate(restaurantId, localDate);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Dish> createWithLocation(@Valid @RequestBody Dish dish,
-                                                   @PathVariable("restaurant_id") Integer restaurantId) {
+                                                   @PathVariable("restaurant_id") Integer restaurantId,
+                                                   @RequestParam @Nullable LocalDate createdAt) {
         log.info("create {}", dish);
         checkNew(dish);
         Optional<Restaurant> restaurant = restaurantRepository.findById(restaurantId);
-        dish.setRestaurant(restaurant.get());
+        dish.setRestaurant(restaurant.orElse(null));
+        dish.setCreatedAt(createdAt);
         Dish created = dishRepository.prepareAndSave(dish, restaurantId);
 
         URI uriOfNewResource = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()

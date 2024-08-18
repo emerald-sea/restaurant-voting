@@ -9,15 +9,15 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
-public interface  VoteRepository extends BaseRepository<Vote> {
+public interface VoteRepository extends BaseRepository<Vote> {
     @Query("SELECT v FROM Vote v WHERE v.id=:id AND v.restaurant.id=:restaurant AND v.createdAt=:createdAt")
     Optional<Vote> getExistedToday(int id, int restaurant, LocalDate createdAt);
 
+    @Query("SELECT v FROM Vote v WHERE  v.createdAt=:createdAt AND v.user.id=:user")
+    Optional<Vote> getExistedTodayByUser(LocalDate createdAt, int user);
+
     @Modifying
     @Transactional
-    @Query("DELETE FROM Vote v WHERE v.id=:id AND v.restaurant.id=:restaurant")
-    int deleteExisted(int id, int restaurant);
-
-
-
+    @Query("DELETE FROM Vote v WHERE  v.user.id=:user")
+    int deleteExistedByUser(int user);
 }
